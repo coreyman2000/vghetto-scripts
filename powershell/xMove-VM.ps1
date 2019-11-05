@@ -157,7 +157,7 @@ add-type @"
             $vmnetworkname = ($vmnetworks -split ",")[$count]
 
             # Extract Distributed Portgroup required info
-            $dvpg = Get-VDPortgroup -Server $destvc -Name $vmnetworkname
+            $dvpg = Get-VDPortgroup -Server $destvc -Name $vmnetworkname -VDSwitch $destswitch
             $vds_uuid = (Get-View $dvpg.ExtensionData.Config.DistributedVirtualSwitch).Uuid
             $dvpg_key = $dvpg.ExtensionData.Config.key
 
@@ -206,6 +206,7 @@ $destVC = "vcenter60-3.primp-industries.com"
 $destVCUsername = "administrator@vghetto.local"
 $destVCpassword = "VMware1!"
 $datastorename = "la-datastore1"
+$destswitch = "Enter VDS swtich"
 $resourcepool = "WorkloadRP"
 $vmhostname = "vesxi60-5.primp-industries.com"
 $vmnetworkname = "LA-VM-Network1,LA-VM-Network2"
