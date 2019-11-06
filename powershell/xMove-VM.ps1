@@ -198,15 +198,19 @@ add-type @"
     $task1 | Wait-Task
 }
 
+#connecton Strings
+$sourceVCcred = Get-Credential -UserName administrator@vsphere.local -Message 'Enter Password for Source Vcenter'
+$destVCcred = Get-Credential -UserName administrator@vsphere.local -Message 'Enter Password for Destination Vcenter'
+
 # Variables that must be defined
 
 $vmname = "TinyVM-2"
 $sourceVC = "vcenter60-1.primp-industries.com"
-$sourceVCUsername = "administrator@vghetto.local"
-$sourceVCPassword = "VMware1!"
+#$sourceVCUsername = "administrator@vghetto.local"
+#$sourceVCPassword = "VMware1!"
 $destVC = "vcenter60-3.primp-industries.com"
-$destVCUsername = "administrator@vghetto.local"
-$destVCpassword = "VMware1!"
+#$destVCUsername = "administrator@vghetto.local"
+#$destVCpassword = "VMware1!"
 $datastorename = "la-datastore1"
 $destswitch = "Enter VDS swtich"
 $cluster = "Cluster"
@@ -219,8 +223,8 @@ $ComputeXVC = 1
 $UppercaseUUID = $false
 
 # Connect to Source/Destination vCenter Server
-$sourceVCConn = Connect-VIServer -Server $sourceVC -user $sourceVCUsername -password $sourceVCPassword
-$destVCConn = Connect-VIServer -Server $destVC -user $destVCUsername -password $destVCpassword
+$sourceVCConn = Connect-VIServer -Server $sourceVC -Credential $sourceVCcred
+$destVCConn = Connect-VIServer -Server $destVC -Credential $destVCcred
 
 xMove-VM -sourcevc $sourceVCConn -destvc $destVCConn -VM $vmname -switchtype $switchtype -switch $switchname -cluster $cluster -resourcepool $resourcepool -vmhost $vmhostname -datastore $datastorename -vmnetwork $vmnetworkname -xvcType $computeXVC -uppercaseuuid $UppercaseUUID
 
