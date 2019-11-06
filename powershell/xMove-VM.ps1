@@ -24,7 +24,9 @@
    Description : Added additional parameters to be able to perform cold migration to/from VMware Cloud on AWS (VMC)
                  -ResourcePool
                  -uppercaseuuid
-
+ Updated by  : Corey Poole @coreyman2000
+   Version     : 1.2
+   Description : Added additional parameters to be able to perform migrations with dupluicates dest port groups
 .LINK
     http://www.virtuallyghetto.com/2016/05/automating-cross-vcenter-vmotion-xvc-vmotion-between-the-same-different-sso-domain.html
 .LINK
