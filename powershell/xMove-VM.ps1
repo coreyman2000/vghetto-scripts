@@ -26,7 +26,7 @@
                  -uppercaseuuid
  Updated by  : Corey Poole @coreyman2000
    Version     : 1.3
-   Description : Added additional parameters to be able to perform migrations with dupluicates dest port groups
+   Description : Added additional parameters to be able to perform migrations with duplicates source and/or destination port group names
 .LINK
     http://www.virtuallyghetto.com/2016/05/automating-cross-vcenter-vmotion-xvc-vmotion-between-the-same-different-sso-domain.html
 .LINK
@@ -209,7 +209,8 @@ $destVCUsername = "administrator@vghetto.local"
 $destVCpassword = "VMware1!"
 $datastorename = "la-datastore1"
 $destswitch = "Enter VDS swtich"
-$resourcepool = "WorkloadRP"
+$cluster = "Cluster"
+$resourcepool = ""
 $vmhostname = "vesxi60-5.primp-industries.com"
 $vmnetworkname = "LA-VM-Network1,LA-VM-Network2"
 $switchname = "LA-VDS"
@@ -221,7 +222,7 @@ $UppercaseUUID = $false
 $sourceVCConn = Connect-VIServer -Server $sourceVC -user $sourceVCUsername -password $sourceVCPassword
 $destVCConn = Connect-VIServer -Server $destVC -user $destVCUsername -password $destVCpassword
 
-xMove-VM -sourcevc $sourceVCConn -destvc $destVCConn -VM $vmname -switchtype $switchtype -switch $switchname -resourcepool $resourcepool -vmhost $vmhostname -datastore $datastorename -vmnetwork  $vmnetworkname -xvcType $computeXVC -uppercaseuuid $UppercaseUUID
+xMove-VM -sourcevc $sourceVCConn -destvc $destVCConn -VM $vmname -switchtype $switchtype -switch $switchname -cluster $cluster -resourcepool $resourcepool -vmhost $vmhostname -datastore $datastorename -vmnetwork $vmnetworkname -xvcType $computeXVC -uppercaseuuid $UppercaseUUID
 
 # Disconnect from Source/Destination VC
 Disconnect-VIServer -Server $sourceVCConn -Confirm:$false
