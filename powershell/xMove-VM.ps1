@@ -27,6 +27,9 @@
  Updated by  : Corey Poole @coreyman2000
    Version     : 1.3
    Description : Added additional parameters to be able to perform migrations with duplicates source and/or destination port group names
+    Updated by  : Corey Poole @coreyman2000
+   Version     : 1.4
+   Description :Added answer files in CVS to perform mutiple migrations , Added secure password 
 .LINK
     http://www.virtuallyghetto.com/2016/05/automating-cross-vcenter-vmotion-xvc-vmotion-between-the-same-different-sso-domain.html
 .LINK
@@ -135,9 +138,10 @@ add-type @"
     # regardless if its within same SSO Domain or not
     $service = New-Object VMware.Vim.ServiceLocator
     $credential = New-Object VMware.Vim.ServiceLocatorNamePassword
-    $credential.username = $destVCusername
-    $credential.password = $destVCpassword
-    $service.credential = $credential
+   $credential.username = $destVCusername
+   $credential.password = ([Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($destVCpassword)))
+  $service.credential = $credential
+   #$service.credential =  $destVCcred
     # For some xVC-vMotion, VC's InstanceUUID must be in all caps
     # Haven't figured out why, but this flag would allow user to toggle (default=false)
     if($uppercaseuuid) {
@@ -198,36 +202,44 @@ add-type @"
     $task1 | Wait-Task
 }
 
-#connecton Strings
-$sourceVCcred = Get-Credential -UserName administrator@vsphere.local -Message 'Enter Password for Source Vcenter'
-$destVCcred = Get-Credential -UserName administrator@vsphere.local -Message 'Enter Password for Destination Vcenter'
-
 # Variables that must be defined
+$sourceVCUsername = "administrator@vsphere.local"
+$Secure1Password = Read-Host -Prompt "Enter password for source vcenter $sourceVCUsername" -AsSecureString 
+$destVCUsername = "administrator@vsphere.local"
+$Secure2Password = Read-Host -Prompt "Enter password for dest vcenter  $destVCUsername" -AsSecureString 
 
-$vmname = "TinyVM-2"
-$sourceVC = "vcenter60-1.primp-industries.com"
-#$sourceVCUsername = "administrator@vghetto.local"
-#$sourceVCPassword = "VMware1!"
-$destVC = "vcenter60-3.primp-industries.com"
-#$destVCUsername = "administrator@vghetto.local"
-#$destVCpassword = "VMware1!"
-$datastorename = "la-datastore1"
-$destswitch = "Enter VDS swtich"
-$cluster = "Cluster"
+# Variables defined in csv 
+$answerfile = Import-CSV answersfile.csv
+
+
+foreach($data in $answerfile) {
+
+
+$vmname = $data.vmname
+$sourceVC = $data.sourceVC
+
+$sourceVCPassword = $Secure1Password
+$destVC = $data.destVC
+
+$destVCpassword = $Secure2Password
+$datastorename = $data.datastorename
+$destswitch = $data.destswitch
+$cluster = $data.cluster
 $resourcepool = ""
-$vmhostname = "vesxi60-5.primp-industries.com"
-$vmnetworkname = "LA-VM-Network1,LA-VM-Network2"
-$switchname = "LA-VDS"
+$vmhostname = $data.vmhostname
+$vmnetworkname = $data.vmnetworkname
+$switchname = $data.switchname
 $switchtype = "vds"
 $ComputeXVC = 1
 $UppercaseUUID = $false
 
 # Connect to Source/Destination vCenter Server
-$sourceVCConn = Connect-VIServer -Server $sourceVC -Credential $sourceVCcred
-$destVCConn = Connect-VIServer -Server $destVC -Credential $destVCcred
+$sourceVCConn = Connect-VIServer -Server $sourceVC -user $sourceVCUsername -password ([Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($sourceVCPassword)))
+$destVCConn = Connect-VIServer -Server $destVC -user $destVCUsername -password  ([Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($destVCpassword)))
 
 xMove-VM -sourcevc $sourceVCConn -destvc $destVCConn -VM $vmname -switchtype $switchtype -switch $switchname -cluster $cluster -resourcepool $resourcepool -vmhost $vmhostname -datastore $datastorename -vmnetwork $vmnetworkname -xvcType $computeXVC -uppercaseuuid $UppercaseUUID
 
 # Disconnect from Source/Destination VC
 Disconnect-VIServer -Server $sourceVCConn -Confirm:$false
 Disconnect-VIServer -Server $destVCConn -Confirm:$false
+}
