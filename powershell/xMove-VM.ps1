@@ -31,7 +31,7 @@
    Version     : 1.4
    Description :Added answer files in CVS to perform mutiple migrations , Added secure password 
 .LINK
-    http://www.virtuallyghetto.com/2016/05/automating-cross-vcenter-vmotion-xvc-vmotion-between-the-same-different-sso-domain.html
+    http://www.williamlam.com/2016/05/automating-cross-vcenter-vmotion-xvc-vmotion-between-the-same-different-sso-domain.html
 .LINK
    https://github.com/lamw
 
